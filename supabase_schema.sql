@@ -50,17 +50,24 @@ create policy "Users can update own profile" on profiles for update using (auth.
 create policy "Public profiles are viewable by everyone" on profiles for select using (true);
 
 -- Loans: Policies
+drop policy if exists "Users can view their loans" on loans;
 create policy "Users can view their loans" on loans for select 
 using (auth.uid() = lender_id or auth.uid() = debtor_id);
+
+drop policy if exists "Users can insert their own loans" on loans;
 create policy "Users can insert their own loans" on loans for insert
 with check (auth.uid() = lender_id or auth.uid() = debtor_id);
+
+drop policy if exists "Users can update their own loans" on loans;
 create policy "Users can update their own loans" on loans for update
 using (auth.uid() = lender_id or auth.uid() = debtor_id);
 
+drop policy if exists "Users can delete their own loans" on loans;
 create policy "Users can delete their own loans" on loans for delete
 using (auth.uid() = lender_id or auth.uid() = debtor_id);
 
 -- Payments: Policies
+drop policy if exists "Users can view payments for their loans" on payments;
 create policy "Users can view payments for their loans" on payments for select
 using (
   exists (
@@ -69,6 +76,8 @@ using (
     and (loans.lender_id = auth.uid() or loans.debtor_id = auth.uid())
   )
 );
+
+drop policy if exists "Users can insert payments for their loans" on payments;
 create policy "Users can insert payments for their loans" on payments for insert
 with check (
   exists (
@@ -78,6 +87,7 @@ with check (
   )
 );
 
+drop policy if exists "Users can update payments for their loans" on payments;
 create policy "Users can update payments for their loans" on payments for update
 using (
   exists (
@@ -87,6 +97,7 @@ using (
   )
 );
 
+drop policy if exists "Users can delete payments for their loans" on payments;
 create policy "Users can delete payments for their loans" on payments for delete
 using (
   exists (
