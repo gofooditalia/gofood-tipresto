@@ -57,6 +57,9 @@ with check (auth.uid() = lender_id or auth.uid() = debtor_id);
 create policy "Users can update their own loans" on loans for update
 using (auth.uid() = lender_id or auth.uid() = debtor_id);
 
+create policy "Users can delete their own loans" on loans for delete
+using (auth.uid() = lender_id or auth.uid() = debtor_id);
+
 -- Payments: Policies
 create policy "Users can view payments for their loans" on payments for select
 using (
@@ -68,6 +71,24 @@ using (
 );
 create policy "Users can insert payments for their loans" on payments for insert
 with check (
+  exists (
+    select 1 from loans 
+    where loans.id = payments.loan_id 
+    and (loans.lender_id = auth.uid() or loans.debtor_id = auth.uid())
+  )
+);
+
+create policy "Users can update payments for their loans" on payments for update
+using (
+  exists (
+    select 1 from loans 
+    where loans.id = payments.loan_id 
+    and (loans.lender_id = auth.uid() or loans.debtor_id = auth.uid())
+  )
+);
+
+create policy "Users can delete payments for their loans" on payments for delete
+using (
   exists (
     select 1 from loans 
     where loans.id = payments.loan_id 

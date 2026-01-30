@@ -185,7 +185,8 @@ export function DashboardClient() {
             .eq('id', paymentId)
 
         if (paymentError) {
-            toast.error("Errore nella conferma del pagamento")
+            console.error("Payment confirmation error:", paymentError)
+            toast.error(`Errore nella conferma del pagamento: ${paymentError.message}`)
             return
         }
 
@@ -221,7 +222,8 @@ export function DashboardClient() {
             .eq('id', paymentId)
 
         if (error) {
-            toast.error("Errore nel rifiuto del pagamento")
+            console.error("Payment rejection error:", error)
+            toast.error(`Errore nel rifiuto del pagamento: ${error.message}`)
         } else {
             setPayments(payments.map(p => p.id === paymentId ? { ...p, status: 'rejected' } : p))
             toast.error("Pagamento rifiutato")
