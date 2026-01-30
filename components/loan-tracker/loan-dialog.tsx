@@ -19,13 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Loan } from "@/lib/loan-data"
+import type { Loan, UserRole } from "@/lib/loan-data"
+import { supabase } from "@/lib/supabase"
+import { toast } from "sonner"
 
 interface LoanDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   loan?: Loan | null
   onSave: (loan: Omit<Loan, 'id'> & { id?: string }) => void
+  activeRole: UserRole
 }
 
 const loanTypes: { value: Loan['type']; label: string }[] = [
@@ -36,7 +39,7 @@ const loanTypes: { value: Loan['type']; label: string }[] = [
   { value: 'business', label: 'Aziendale' },
 ]
 
-export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps) {
+export function LoanDialog({ open, onOpenChange, loan, onSave, activeRole }: LoanDialogProps) {
   const [formData, setFormData] = useState({
     name: '',
     lender_name: '',
@@ -47,7 +50,25 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
     start_date: '',
     end_date: '',
     type: 'personal' as Loan['type'],
+    debtor_id: '',
   })
+  const [profiles, setProfiles] = useState<{ id: string, full_name: string, role: string }[]>([])
+
+  useEffect(() => {
+    if (open) {
+      const fetchProfiles = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('id, full_name, role')
+          .order('full_name')
+
+        if (data) {
+          setProfiles(data)
+        }
+      }
+      fetchProfiles()
+    }
+  }, [open])
 
   useEffect(() => {
     if (loan) {
@@ -61,6 +82,7 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
         start_date: loan.start_date,
         end_date: loan.end_date,
         type: loan.type,
+        debtor_id: loan.debtor_id || '',
       })
     } else {
       setFormData({
@@ -73,12 +95,20 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
         start_date: '',
         end_date: '',
         type: 'personal',
+        debtor_id: '',
       })
     }
   }, [loan, open])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Validate for creditor: they must select a debtor
+    if (activeRole === 'creditor' && !formData.debtor_id) {
+      toast.error("Per favore seleziona un debitore")
+      return
+    }
+
     onSave({
       id: loan?.id,
       name: formData.name,
@@ -91,15 +121,14 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
       end_date: formData.end_date,
       status: 'active',
       type: formData.type,
-      lender_id: loan?.lender_id || '',
-      debtor_id: loan?.debtor_id || '',
+      debtor_id: formData.debtor_id || (loan?.debtor_id ? loan.debtor_id : undefined) as any,
     })
     onOpenChange(false)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-card border-border">
+      <DialogContent className="sm:max-w-[500px] bg-card border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">
             {loan ? 'Modifica Prestito' : 'Nuovo Prestito'}
@@ -118,6 +147,32 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
                 required
               />
             </div>
+
+            {activeRole === 'creditor' && (
+              <div className="col-span-2">
+                <Label htmlFor="debtor" className="text-foreground">Debitore</Label>
+                <Select
+                  value={formData.debtor_id}
+                  onValueChange={(value) => setFormData({ ...formData, debtor_id: value })}
+                  required
+                >
+                  <SelectTrigger className="mt-1.5 focus:ring-primary">
+                    <SelectValue placeholder="Seleziona un debitore..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {profiles
+                      .filter(p => p.role === 'debtor')
+                      .map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.full_name}
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="col-span-2">
               <Label htmlFor="lender_name" className="text-foreground">Istituto di Credito</Label>
               <Input
@@ -219,7 +274,7 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
               />
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-border mt-6">
             <Button
               type="button"
               variant="outline"

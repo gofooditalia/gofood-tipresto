@@ -80,30 +80,44 @@ export default function LoanTrackerPage() {
   }
 
   const handleSaveLoan = async (loanData: Omit<Loan, 'id'> & { id?: string }) => {
+    // If it's a new loan, we need to set the IDs correctly based on who is creating it
+    const finalLoanData = { ...loanData }
+
+    if (!loanData.id) {
+      if (activeRole === 'creditor') {
+        finalLoanData.lender_id = user.id
+        // debtor_id is already set from the dialog selection
+      } else {
+        finalLoanData.debtor_id = user.id
+        // lender_id could be empty if not selected, but for debtor view 
+        // it's usually a bank (lender_name), lender_id remains null/undefined
+        delete (finalLoanData as any).lender_id
+      }
+    }
+
     if (loanData.id) {
       const { error } = await supabase
         .from('loans')
-        .update(loanData)
+        .update(finalLoanData)
         .eq('id', loanData.id)
 
       if (error) {
+        console.error("Update error:", error)
         toast.error("Errore nell'aggiornamento del prestito")
       } else {
-        setLoans(loans.map(l => l.id === loanData.id ? { ...loanData, id: loanData.id } as Loan : l))
+        setLoans(loans.map(l => l.id === loanData.id ? { ...finalLoanData, id: loanData.id } as Loan : l))
         toast.success("Prestito aggiornato correttamente")
       }
     } else {
       const { data, error } = await supabase
         .from('loans')
-        .insert({
-          ...loanData,
-          lender_id: user.id
-        })
+        .insert(finalLoanData)
         .select()
         .single()
 
       if (error) {
-        toast.error("Errore nella creazione del prestito")
+        console.error("Insert error:", error)
+        toast.error("Errore nella creazione del prestito: " + error.message)
       } else {
         setLoans([data, ...loans])
         toast.success("Prestito creato correttamente")
@@ -234,6 +248,7 @@ export default function LoanTrackerPage() {
         onOpenChange={setLoanDialogOpen}
         loan={selectedLoan}
         onSave={handleSaveLoan}
+        activeRole={activeRole}
       />
 
       <PaymentDialog
