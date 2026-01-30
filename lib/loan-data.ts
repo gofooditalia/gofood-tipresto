@@ -58,6 +58,10 @@ export function calculateProgress(loan: Loan): number {
   return ((loan.original_amount - loan.current_balance) / loan.original_amount) * 100
 }
 
+export function getInitialTotal(loans: Loan[]): number {
+  return loans.reduce((sum, loan) => sum + Number(loan.original_amount), 0)
+}
+
 export function getTotalDebt(loans: Loan[]): number {
   return loans.filter(l => l.status !== 'paid').reduce((sum, loan) => sum + Number(loan.current_balance), 0)
 }

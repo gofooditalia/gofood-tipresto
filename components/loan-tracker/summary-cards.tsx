@@ -2,34 +2,35 @@
 
 import { TrendingDown, CreditCard, Percent, CalendarDays } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import type { Loan } from "@/lib/loan-data"
-import { getTotalDebt, getMonthlyTotal, formatCurrency } from "@/lib/loan-data"
+import { getInitialTotal, getTotalDebt, getMonthlyTotal, formatCurrency, type Loan } from "@/lib/loan-data"
 
 interface SummaryCardsProps {
   loans: Loan[]
+  activeRole: 'debtor' | 'creditor'
 }
 
-export function SummaryCards({ loans }: SummaryCardsProps) {
-  const totalDebt = getTotalDebt(loans)
+export function SummaryCards({ loans, activeRole }: SummaryCardsProps) {
+  const initialTotal = getInitialTotal(loans)
+  const currentTotal = getTotalDebt(loans)
   const monthlyPayment = getMonthlyTotal(loans)
   const activeLoans = loans.filter(l => l.status === 'active').length
-  const avgInterest = loans.filter(l => l.status === 'active').reduce((sum, l) => sum + l.interest_rate, 0) / activeLoans || 0
+  const avgInterest = activeLoans > 0 ? loans.filter(l => l.status === 'active').reduce((sum, l) => sum + l.interest_rate, 0) / activeLoans : 0
 
   const stats = [
     {
-      title: "Debito Totale",
-      value: formatCurrency(totalDebt),
+      title: activeRole === 'creditor' ? "Credito Totale" : "Debito Totale",
+      value: formatCurrency(initialTotal),
       icon: TrendingDown,
-      change: "-2,4%",
-      changeLabel: "vs mese scorso",
+      change: "Capitale",
+      changeLabel: "erogato",
       positive: true,
     },
     {
-      title: "Rata Mensile",
-      value: formatCurrency(monthlyPayment),
+      title: activeRole === 'creditor' ? "Credito Residuo" : "Debito Residuo",
+      value: formatCurrency(currentTotal),
       icon: CreditCard,
-      change: `${activeLoans} prestiti`,
-      changeLabel: "attivi",
+      change: formatCurrency(initialTotal - currentTotal),
+      changeLabel: "pagato",
       positive: false,
     },
     {
