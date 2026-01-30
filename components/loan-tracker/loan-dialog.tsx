@@ -39,13 +39,13 @@ const loanTypes: { value: Loan['type']; label: string }[] = [
 export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps) {
   const [formData, setFormData] = useState({
     name: '',
-    lender: '',
-    originalAmount: '',
-    currentBalance: '',
-    interestRate: '',
-    monthlyPayment: '',
-    startDate: '',
-    endDate: '',
+    lender_name: '',
+    original_amount: '',
+    current_balance: '',
+    interest_rate: '',
+    monthly_payment: '',
+    start_date: '',
+    end_date: '',
     type: 'personal' as Loan['type'],
   })
 
@@ -53,25 +53,25 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
     if (loan) {
       setFormData({
         name: loan.name,
-        lender: loan.lender,
-        originalAmount: loan.originalAmount.toString(),
-        currentBalance: loan.currentBalance.toString(),
-        interestRate: loan.interestRate.toString(),
-        monthlyPayment: loan.monthlyPayment.toString(),
-        startDate: loan.startDate,
-        endDate: loan.endDate,
+        lender_name: loan.lender_name || '',
+        original_amount: loan.original_amount.toString(),
+        current_balance: loan.current_balance.toString(),
+        interest_rate: loan.interest_rate.toString(),
+        monthly_payment: loan.monthly_payment.toString(),
+        start_date: loan.start_date,
+        end_date: loan.end_date,
         type: loan.type,
       })
     } else {
       setFormData({
         name: '',
-        lender: '',
-        originalAmount: '',
-        currentBalance: '',
-        interestRate: '',
-        monthlyPayment: '',
-        startDate: '',
-        endDate: '',
+        lender_name: '',
+        original_amount: '',
+        current_balance: '',
+        interest_rate: '',
+        monthly_payment: '',
+        start_date: '',
+        end_date: '',
         type: 'personal',
       })
     }
@@ -82,15 +82,17 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
     onSave({
       id: loan?.id,
       name: formData.name,
-      lender: formData.lender,
-      originalAmount: parseFloat(formData.originalAmount),
-      currentBalance: parseFloat(formData.currentBalance),
-      interestRate: parseFloat(formData.interestRate),
-      monthlyPayment: parseFloat(formData.monthlyPayment),
-      startDate: formData.startDate,
-      endDate: formData.endDate,
+      lender_name: formData.lender_name,
+      original_amount: parseFloat(formData.original_amount),
+      current_balance: parseFloat(formData.current_balance),
+      interest_rate: parseFloat(formData.interest_rate),
+      monthly_payment: parseFloat(formData.monthly_payment),
+      start_date: formData.start_date,
+      end_date: formData.end_date,
       status: 'active',
       type: formData.type,
+      lender_id: loan?.lender_id || '',
+      debtor_id: loan?.debtor_id || '',
     })
     onOpenChange(false)
   }
@@ -117,11 +119,11 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
               />
             </div>
             <div className="col-span-2">
-              <Label htmlFor="lender" className="text-foreground">Istituto di Credito</Label>
+              <Label htmlFor="lender_name" className="text-foreground">Istituto di Credito</Label>
               <Input
-                id="lender"
-                value={formData.lender}
-                onChange={(e) => setFormData({ ...formData, lender: e.target.value })}
+                id="lender_name"
+                value={formData.lender_name}
+                onChange={(e) => setFormData({ ...formData, lender_name: e.target.value })}
                 placeholder="Es: Intesa Sanpaolo"
                 className="mt-1.5"
                 required
@@ -146,72 +148,72 @@ export function LoanDialog({ open, onOpenChange, loan, onSave }: LoanDialogProps
               </Select>
             </div>
             <div>
-              <Label htmlFor="interestRate" className="text-foreground">Tasso di Interesse (%)</Label>
+              <Label htmlFor="interest_rate" className="text-foreground">Tasso di Interesse (%)</Label>
               <Input
-                id="interestRate"
+                id="interest_rate"
                 type="number"
                 step="0.1"
-                value={formData.interestRate}
-                onChange={(e) => setFormData({ ...formData, interestRate: e.target.value })}
+                value={formData.interest_rate}
+                onChange={(e) => setFormData({ ...formData, interest_rate: e.target.value })}
                 placeholder="12.5"
                 className="mt-1.5"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="originalAmount" className="text-foreground">Importo Originale</Label>
+              <Label htmlFor="original_amount" className="text-foreground">Importo Originale</Label>
               <Input
-                id="originalAmount"
+                id="original_amount"
                 type="number"
-                value={formData.originalAmount}
-                onChange={(e) => setFormData({ ...formData, originalAmount: e.target.value })}
+                value={formData.original_amount}
+                onChange={(e) => setFormData({ ...formData, original_amount: e.target.value })}
                 placeholder="15000"
                 className="mt-1.5"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="currentBalance" className="text-foreground">Debito Residuo</Label>
+              <Label htmlFor="current_balance" className="text-foreground">Debito Residuo</Label>
               <Input
-                id="currentBalance"
+                id="current_balance"
                 type="number"
-                value={formData.currentBalance}
-                onChange={(e) => setFormData({ ...formData, currentBalance: e.target.value })}
+                value={formData.current_balance}
+                onChange={(e) => setFormData({ ...formData, current_balance: e.target.value })}
                 placeholder="8750"
                 className="mt-1.5"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="monthlyPayment" className="text-foreground">Rata Mensile</Label>
+              <Label htmlFor="monthly_payment" className="text-foreground">Rata Mensile</Label>
               <Input
-                id="monthlyPayment"
+                id="monthly_payment"
                 type="number"
-                value={formData.monthlyPayment}
-                onChange={(e) => setFormData({ ...formData, monthlyPayment: e.target.value })}
+                value={formData.monthly_payment}
+                onChange={(e) => setFormData({ ...formData, monthly_payment: e.target.value })}
                 placeholder="450"
                 className="mt-1.5"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="startDate" className="text-foreground">Data Inizio</Label>
+              <Label htmlFor="start_date" className="text-foreground">Data Inizio</Label>
               <Input
-                id="startDate"
+                id="start_date"
                 type="date"
-                value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                value={formData.start_date}
+                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                 className="mt-1.5"
                 required
               />
             </div>
             <div className="col-span-2">
-              <Label htmlFor="endDate" className="text-foreground">Data Scadenza</Label>
+              <Label htmlFor="end_date" className="text-foreground">Data Scadenza</Label>
               <Input
-                id="endDate"
+                id="end_date"
                 type="date"
-                value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                value={formData.end_date}
+                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                 className="mt-1.5"
                 required
               />

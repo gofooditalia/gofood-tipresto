@@ -1,30 +1,51 @@
-# Loan tracker
+# Gestione Prestiti by GO!Food 🚀
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Applicazione moderna e intuitiva per il monitoraggio e la gestione dei prestiti personali, sviluppata per **GO!Food**.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/giorgios-projects-8ff38143/v0-loan-tracker)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/dbZwSevbaBe)
+## ✨ Caratteristiche Principal
 
-## Overview
+- **Autenticazione Sicura**: Integrazione completa con Supabase Auth per login e registrazione.
+- **Ruoli Utente**: Supporto per profili **Creditore** (chi presta) e **Debitore** (chi riceve).
+- **Persistenza Dati**: Tutti i prestiti e i pagamenti sono salvati su database PostgreSQL tramite Supabase.
+- **Dashboard Dinamica**: Riepilogo in tempo reale di debiti residui, rate mensili e storico pagamenti.
+- **Grafici Analitici**: Visualizzazione dello storico pagamenti degli ultimi 6 mesi.
+- **UI Premium**: Interfaccia moderna basata su Shadcn UI con supporto per Dark Mode e branding ufficiale GO!Food.
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## 🛠 Tech Stack
 
-## Deployment
+- **Framework**: Next.js 15 (App Router)
+- **Database & Auth**: Supabase (PostgreSQL)
+- **Styling**: Tailwind CSS 4 & Shadcn UI
+- **Linguaggio**: TypeScript
+- **Visualizzazione Dati**: Recharts
 
-Your project is live at:
+## 🚀 Guida Rapida alla Configurazione
 
-**[https://vercel.com/giorgios-projects-8ff38143/v0-loan-tracker](https://vercel.com/giorgios-projects-8ff38143/v0-loan-tracker)**
+### 1. Requisiti
+- Node.js & pnpm
+- Un progetto attivo su [Supabase](https://supabase.com)
 
-## Build your app
+### 2. Variabili d'Ambiente (.env.local)
+Configura le seguenti chiavi nel tuo file `.env.local`:
+```env
+NEXT_PUBLIC_SUPABASE_URL=tua_url_supabase
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=tua_anon_key
+```
 
-Continue building your app on:
+### 3. Setup Database
+Esegui il contenuto del file `supabase_schema.sql` nell'SQL Editor del tuo pannello Supabase per creare le tabelle e le policy RLS.
 
-**[https://v0.app/chat/dbZwSevbaBe](https://v0.app/chat/dbZwSevbaBe)**
+### 4. Installazione e Avvio
+```bash
+# Installa le dipendenze
+pnpm install
 
-## How It Works
+# Avvia il server di sviluppo
+pnpm run dev
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+# Build per produzione
+pnpm run build
+```
+
+---
+*Developed by **Antigravity** for **GO!Food***

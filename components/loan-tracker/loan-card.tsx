@@ -13,11 +13,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { Loan } from "@/lib/loan-data"
+import type { Loan, UserRole } from "@/lib/loan-data"
 import { calculateProgress, formatCurrency, getLoanTypeLabel, getStatusLabel } from "@/lib/loan-data"
 
 interface LoanCardProps {
   loan: Loan
+  activeRole: UserRole
   onEdit: (loan: Loan) => void
   onDelete: (id: string) => void
   onMakePayment: (loan: Loan) => void
@@ -31,7 +32,7 @@ const typeIcons: Record<Loan['type'], React.ElementType> = {
   business: Briefcase,
 }
 
-export function LoanCard({ loan, onEdit, onDelete, onMakePayment }: LoanCardProps) {
+export function LoanCard({ loan, activeRole, onEdit, onDelete, onMakePayment }: LoanCardProps) {
   const progress = calculateProgress(loan)
   const Icon = typeIcons[loan.type]
 
@@ -45,31 +46,31 @@ export function LoanCard({ loan, onEdit, onDelete, onMakePayment }: LoanCardProp
             </div>
             <div>
               <h3 className="font-medium text-foreground line-clamp-1">{loan.name}</h3>
-              <p className="text-sm text-muted-foreground">{loan.lender}</p>
+              <p className="text-sm text-muted-foreground">{loan.status === 'active' ? 'Prestito Attivo' : 'Prestito'}</p>
             </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreHorizontal className="w-4 h-4" />
-                <span className="sr-only">Opzioni</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(loan)}>
-                Modifica
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onMakePayment(loan)}>
-                Registra Pagamento
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onDelete(loan.id)}
-                className="text-destructive"
-              >
-                Elimina
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+          {activeRole === 'creditor' && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="w-4 h-4" />
+                  <span className="sr-only">Opzioni</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEdit(loan)}>
+                  Modifica
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onDelete(loan.id)}
+                  className="text-destructive"
+                >
+                  Elimina
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -94,28 +95,31 @@ export function LoanCard({ loan, onEdit, onDelete, onMakePayment }: LoanCardProp
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div>
             <p className="text-xs text-muted-foreground">Debito residuo</p>
-            <p className="text-lg font-semibold text-foreground">{formatCurrency(loan.currentBalance)}</p>
+            <p className="text-lg font-semibold text-foreground">{formatCurrency(loan.current_balance)}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Rata mensile</p>
-            <p className="text-lg font-semibold text-primary">{formatCurrency(loan.monthlyPayment)}</p>
+            <p className="text-lg font-semibold text-primary">{formatCurrency(loan.monthly_payment)}</p>
           </div>
         </div>
 
         <div className="flex items-center justify-between pt-2 border-t border-border">
           <div className="text-xs text-muted-foreground">
             <span>Tasso: </span>
-            <span className="font-medium text-foreground">{loan.interestRate}% TAN</span>
+            <span className="font-medium text-foreground">{loan.interest_rate}% TAN</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onMakePayment(loan)}
-            className="text-primary hover:text-primary/80"
-            disabled={loan.status === 'paid'}
-          >
-            Paga
-          </Button>
+
+          {activeRole === 'debtor' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onMakePayment(loan)}
+              className="text-primary hover:text-primary/80"
+              disabled={loan.status === 'paid'}
+            >
+              Paga
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

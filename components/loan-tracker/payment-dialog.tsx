@@ -28,7 +28,7 @@ export function PaymentDialog({ open, onOpenChange, loan, onPayment }: PaymentDi
 
   useEffect(() => {
     if (loan) {
-      setAmount(loan.monthlyPayment.toString())
+      setAmount(loan.monthly_payment.toString())
     }
   }, [loan, open])
 
@@ -55,11 +55,11 @@ export function PaymentDialog({ open, onOpenChange, loan, onPayment }: PaymentDi
           <div className="p-4 rounded-lg bg-secondary/50 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Debito residuo</span>
-              <span className="font-medium text-foreground">{formatCurrency(loan.currentBalance)}</span>
+              <span className="font-medium text-foreground">{formatCurrency(loan.current_balance)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Rata mensile suggerita</span>
-              <span className="font-medium text-primary">{formatCurrency(loan.monthlyPayment)}</span>
+              <span className="font-medium text-primary">{formatCurrency(loan.monthly_payment)}</span>
             </div>
           </div>
 

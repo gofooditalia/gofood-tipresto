@@ -13,7 +13,7 @@ export function SummaryCards({ loans }: SummaryCardsProps) {
   const totalDebt = getTotalDebt(loans)
   const monthlyPayment = getMonthlyTotal(loans)
   const activeLoans = loans.filter(l => l.status === 'active').length
-  const avgInterest = loans.filter(l => l.status === 'active').reduce((sum, l) => sum + l.interestRate, 0) / activeLoans || 0
+  const avgInterest = loans.filter(l => l.status === 'active').reduce((sum, l) => sum + l.interest_rate, 0) / activeLoans || 0
 
   const stats = [
     {

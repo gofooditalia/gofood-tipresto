@@ -10,17 +10,36 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
+import type { Loan, Payment } from "@/lib/loan-data"
 
-const data = [
-  { month: "Ago", pagato: 2520, residuo: 195250 },
-  { month: "Set", pagato: 2520, residuo: 192730 },
-  { month: "Ott", pagato: 2520, residuo: 190210 },
-  { month: "Nov", pagato: 2520, residuo: 187690 },
-  { month: "Dic", pagato: 2520, residuo: 185170 },
-  { month: "Gen", pagato: 2520, residuo: 195250 },
-]
+interface PaymentChartProps {
+  payments: Payment[]
+  loans: Loan[]
+}
 
-export function PaymentChart() {
+export function PaymentChart({ payments, loans }: PaymentChartProps) {
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date()
+    d.setMonth(d.getMonth() - i)
+    return {
+      month: d.toLocaleString('it-IT', { month: 'short' }),
+      monthNum: d.getMonth(),
+      year: d.getFullYear(),
+      pagato: 0,
+    }
+  }).reverse()
+
+  const chartData = last6Months.map(m => {
+    const monthPayments = payments.filter(p => {
+      const d = new Date(p.date)
+      return d.getMonth() === m.monthNum && d.getFullYear() === m.year && p.status === 'completed'
+    })
+    return {
+      month: m.month,
+      pagato: monthPayments.reduce((sum, p) => sum + p.amount, 0),
+    }
+  })
+
   return (
     <Card className="bg-card border-border">
       <CardHeader>
@@ -29,7 +48,7 @@ export function PaymentChart() {
       <CardContent>
         <div className="h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorPagato" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="oklch(0.72 0.19 160)" stopOpacity={0.4} />

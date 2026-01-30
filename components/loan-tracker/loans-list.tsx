@@ -1,16 +1,15 @@
-"use client"
-
 import { LoanCard } from "./loan-card"
-import type { Loan } from "@/lib/loan-data"
+import type { Loan, UserRole } from "@/lib/loan-data"
 
 interface LoansListProps {
   loans: Loan[]
+  activeRole: UserRole
   onEdit: (loan: Loan) => void
   onDelete: (id: string) => void
   onMakePayment: (loan: Loan) => void
 }
 
-export function LoansList({ loans, onEdit, onDelete, onMakePayment }: LoansListProps) {
+export function LoansList({ loans, activeRole, onEdit, onDelete, onMakePayment }: LoansListProps) {
   const activeLoans = loans.filter(l => l.status === 'active')
   const completedLoans = loans.filter(l => l.status === 'paid')
 
@@ -27,6 +26,7 @@ export function LoansList({ loans, onEdit, onDelete, onMakePayment }: LoansListP
               <LoanCard
                 key={loan.id}
                 loan={loan}
+                activeRole={activeRole}
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onMakePayment={onMakePayment}
@@ -51,6 +51,7 @@ export function LoansList({ loans, onEdit, onDelete, onMakePayment }: LoansListP
               <LoanCard
                 key={loan.id}
                 loan={loan}
+                activeRole={activeRole}
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onMakePayment={onMakePayment}
