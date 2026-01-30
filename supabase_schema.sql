@@ -44,15 +44,20 @@ alter table profiles enable row level security;
 alter table loans enable row level security;
 alter table payments enable row level security;
 
--- Profiles: Users can view their own profile
+-- Profiles: Policies
 create policy "Users can view own profile" on profiles for select using (auth.uid() = id);
 create policy "Users can update own profile" on profiles for update using (auth.uid() = id);
+create policy "Public profiles are viewable by everyone" on profiles for select using (true);
 
--- Loans: Users can view loans where they are either lender or debtor
+-- Loans: Policies
 create policy "Users can view their loans" on loans for select 
 using (auth.uid() = lender_id or auth.uid() = debtor_id);
+create policy "Users can insert their own loans" on loans for insert
+with check (auth.uid() = lender_id or auth.uid() = debtor_id);
+create policy "Users can update their own loans" on loans for update
+using (auth.uid() = lender_id or auth.uid() = debtor_id);
 
--- Payments: Users can view payments for their loans
+-- Payments: Policies
 create policy "Users can view payments for their loans" on payments for select
 using (
   exists (
@@ -61,3 +66,30 @@ using (
     and (loans.lender_id = auth.uid() or loans.debtor_id = auth.uid())
   )
 );
+create policy "Users can insert payments for their loans" on payments for insert
+with check (
+  exists (
+    select 1 from loans 
+    where loans.id = payments.loan_id 
+    and (loans.lender_id = auth.uid() or loans.debtor_id = auth.uid())
+  )
+);
+
+-- Function to handle new user signups
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, full_name, role)
+  values (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    coalesce(new.raw_user_meta_data->>'role', 'debtor')
+  );
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- Trigger to call handle_new_user on signup
+create or replace trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();

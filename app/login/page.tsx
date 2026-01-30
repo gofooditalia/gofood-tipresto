@@ -59,19 +59,21 @@ export default function LoginPage() {
         }
 
         if (data.user) {
-            // Create profile entry
+            // Upsert profile entry (to avoid conflict with DB trigger)
             const { error: profileError } = await supabase
                 .from("profiles")
-                .insert({
+                .upsert({
                     id: data.user.id,
                     full_name: fullName,
                     role: role,
+                    updated_at: new Date().toISOString(),
                 })
 
             if (profileError) {
-                toast.error("Errore nella creazione del profilo")
+                console.error("Profile creation error:", profileError)
+                toast.error("Errore nella configurazione del profilo: " + profileError.message)
             } else {
-                toast.success("Registrazione completata! Controlla la tua email (se configurata) o accedi.")
+                toast.success("Registrazione completata!")
                 router.push("/")
             }
         }
