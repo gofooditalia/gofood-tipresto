@@ -14,12 +14,11 @@ import { type UserRole } from "@/lib/loan-data"
 interface HeaderProps {
   onAddLoan: () => void
   activeRole: UserRole
-  onRoleChange: (role: UserRole) => void
   user?: any
   onLogout?: () => void
 }
 
-export function Header({ onAddLoan, activeRole, onRoleChange, user, onLogout }: HeaderProps) {
+export function Header({ onAddLoan, activeRole, user, onLogout }: HeaderProps) {
   const [userName, setUserName] = useState<string>("")
 
   useEffect(() => {
@@ -44,23 +43,10 @@ export function Header({ onAddLoan, activeRole, onRoleChange, user, onLogout }: 
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex bg-muted rounded-lg p-1">
-              <Button
-                variant={activeRole === 'debtor' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => onRoleChange('debtor')}
-                className="text-xs h-7"
-              >
-                Debitore
-              </Button>
-              <Button
-                variant={activeRole === 'creditor' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => onRoleChange('creditor')}
-                className="text-xs h-7"
-              >
-                Creditore
-              </Button>
+            <div className="px-3 py-1 bg-muted rounded-lg border border-border">
+              <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {activeRole === 'debtor' ? 'Debitore' : 'Creditore'}
+              </span>
             </div>
 
             {activeRole === 'creditor' && (

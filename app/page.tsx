@@ -196,7 +196,6 @@ export default function LoanTrackerPage() {
       <Header
         onAddLoan={handleAddLoan}
         activeRole={activeRole}
-        onRoleChange={setActiveRole}
         user={user}
         onLogout={handleLogout}
       />
