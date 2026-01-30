@@ -12,7 +12,10 @@ export const metadata: Metadata = {
   description: 'Applicazione per monitorare e gestire i tuoi prestiti personali con facilità',
   generator: 'v0.app',
   icons: {
-    icon: '/icon.svg',
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon.ico', type: 'image/x-icon' },
+    ],
     apple: '/icon.svg',
   },
 }
