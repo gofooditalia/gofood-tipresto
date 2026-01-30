@@ -33,26 +33,10 @@ export function SummaryCards({ loans, activeRole }: SummaryCardsProps) {
       changeLabel: "pagato",
       positive: false,
     },
-    {
-      title: "Tasso Medio",
-      value: `${avgInterest.toFixed(1)}%`,
-      icon: Percent,
-      change: "TAN",
-      changeLabel: "medio",
-      positive: false,
-    },
-    {
-      title: "Prossimo Pagamento",
-      value: "10 Feb",
-      icon: CalendarDays,
-      change: formatCurrency(1450),
-      changeLabel: "Mutuo",
-      positive: false,
-    },
   ]
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
       {stats.map((stat) => (
         <Card key={stat.title} className="bg-card border-border">
           <CardContent className="p-5">
