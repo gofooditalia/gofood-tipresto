@@ -51,6 +51,39 @@ export default function LoanTrackerPage() {
     checkAuth()
   }, [router])
 
+  useEffect(() => {
+    if (!user) return
+
+    const loansChannel = supabase
+      .channel('realtime-loans')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'loans' },
+        async () => {
+          const loansData = await fetchLoans()
+          setLoans(loansData)
+        }
+      )
+      .subscribe()
+
+    const paymentsChannel = supabase
+      .channel('realtime-payments')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'payments' },
+        async () => {
+          const paymentsData = await fetchPayments()
+          setPayments(paymentsData)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(loansChannel)
+      supabase.removeChannel(paymentsChannel)
+    }
+  }, [user])
+
   const handleLogout = async () => {
     await signOut()
     router.push("/login")
