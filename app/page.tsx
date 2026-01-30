@@ -14,6 +14,8 @@ import { getUser, getProfile, signOut } from "@/lib/auth"
 import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
+import { NotificationHandler } from "@/components/loan-tracker/notification-handler"
+import { User } from "@supabase/supabase-js"
 
 export default function LoanTrackerPage() {
   const [activeRole, setActiveRole] = useState<UserRole>('debtor')
@@ -213,6 +215,8 @@ export default function LoanTrackerPage() {
         user={user}
         onLogout={handleLogout}
       />
+
+      <NotificationHandler user={user} activeRole={activeRole} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
