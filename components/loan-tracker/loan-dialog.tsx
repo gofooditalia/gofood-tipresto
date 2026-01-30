@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -121,6 +122,7 @@ export function LoanDialog({ open, onOpenChange, loan, onSave, activeRole }: Loa
       end_date: formData.end_date,
       status: 'active',
       type: formData.type,
+      lender_id: loan?.lender_id || '',
       debtor_id: formData.debtor_id || (loan?.debtor_id ? loan.debtor_id : undefined) as any,
     })
     onOpenChange(false)
@@ -133,6 +135,9 @@ export function LoanDialog({ open, onOpenChange, loan, onSave, activeRole }: Loa
           <DialogTitle className="text-foreground">
             {loan ? 'Modifica Prestito' : 'Nuovo Prestito'}
           </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            {loan ? 'Modifica i dettagli del prestito esistente.' : 'Inserisci i dettagli per registrare un nuovo prestito.'}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">
