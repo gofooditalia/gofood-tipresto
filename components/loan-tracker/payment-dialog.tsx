@@ -20,22 +20,24 @@ interface PaymentDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   loan: Loan | null
-  onPayment: (loanId: string, amount: number) => void
+  onPayment: (loanId: string, amount: number, file: File | null) => void
 }
 
 export function PaymentDialog({ open, onOpenChange, loan, onPayment }: PaymentDialogProps) {
   const [amount, setAmount] = useState('')
+  const [file, setFile] = useState<File | null>(null)
 
   useEffect(() => {
     if (loan) {
       setAmount(loan.monthly_payment.toString())
+      setFile(null)
     }
   }, [loan, open])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (loan) {
-      onPayment(loan.id, parseFloat(amount))
+      onPayment(loan.id, parseFloat(amount), file)
       onOpenChange(false)
     }
   }
@@ -75,6 +77,20 @@ export function PaymentDialog({ open, onOpenChange, loan, onPayment }: PaymentDi
               className="mt-1.5 text-lg"
               required
             />
+          </div>
+
+          <div>
+            <Label htmlFor="proof" className="text-foreground">Prova di Pagamento (Opzionale)</Label>
+            <Input
+              id="proof"
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              className="mt-1.5 cursor-pointer file:text-primary file:font-semibold"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Carica uno screenshot o un PDF come prova del versamento.
+            </p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

@@ -36,6 +36,7 @@ create table if not exists payments (
   amount numeric not null,
   date timestamp with time zone default timezone('utc'::text, now()),
   status text check (status in ('completed', 'pending', 'rejected')) default 'pending',
+  proof_url text,
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 

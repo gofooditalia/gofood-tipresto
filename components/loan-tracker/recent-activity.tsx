@@ -3,7 +3,7 @@
 import React from "react"
 
 import { Button } from "@/components/ui/button"
-import { Check, X, CheckCircle2, Clock, XCircle } from "lucide-react"
+import { Check, X, CheckCircle2, Clock, XCircle, Paperclip } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Payment, Loan, UserRole } from "@/lib/loan-data"
 import { formatCurrency, formatDate } from "@/lib/loan-data"
@@ -62,6 +62,17 @@ export function RecentActivity({
                   <p className="text-xs text-muted-foreground">
                     {formatDate(payment.date)} - {statusLabels[payment.status]}
                   </p>
+                  {payment.proof_url && (
+                    <a
+                      href={payment.proof_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 mt-1 text-[10px] text-primary hover:underline"
+                    >
+                      <Paperclip className="w-3 h-3" />
+                      Vedi Allegato
+                    </a>
+                  )}
                 </div>
               </div>
 

@@ -156,13 +156,38 @@ export function DashboardClient() {
         }
     }
 
-    const handlePayment = async (loanId: string, amount: number) => {
+    const handlePayment = async (loanId: string, amount: number, file: File | null) => {
+        let proof_url = null
+
+        if (file) {
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${Math.random()}.${fileExt}`
+            const filePath = `${user.id}/${fileName}`
+
+            const { error: uploadError, data } = await supabase.storage
+                .from('payment-proofs')
+                .upload(filePath, file)
+
+            if (uploadError) {
+                console.error("Upload error:", uploadError)
+                toast.error("Errore nel caricamento dell'allegato")
+                return
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('payment-proofs')
+                .getPublicUrl(filePath)
+
+            proof_url = publicUrl
+        }
+
         const { data: newPayment, error } = await supabase
             .from('payments')
             .insert({
                 loan_id: loanId,
                 amount,
-                status: 'pending'
+                status: 'pending',
+                proof_url
             })
             .select()
             .single()
