@@ -156,7 +156,7 @@ export function DashboardClient() {
         }
     }
 
-    const handlePayment = async (loanId: string, amount: number, file: File | null) => {
+    const handlePayment = async (loanId: string, amount: number, file: File | null, notes: string) => {
         let proof_url = null
 
         if (file) {
@@ -187,7 +187,8 @@ export function DashboardClient() {
                 loan_id: loanId,
                 amount,
                 status: 'pending',
-                proof_url
+                proof_url,
+                notes
             })
             .select()
             .single()

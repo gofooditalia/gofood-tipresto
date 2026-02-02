@@ -25,6 +25,7 @@ export interface Payment {
   date: string
   status: 'completed' | 'pending' | 'rejected'
   proof_url?: string
+  notes?: string
 }
 
 // Data fetching functions

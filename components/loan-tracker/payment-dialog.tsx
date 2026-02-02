@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import type { Loan } from "@/lib/loan-data"
 import { formatCurrency } from "@/lib/loan-data"
 
@@ -20,24 +21,26 @@ interface PaymentDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   loan: Loan | null
-  onPayment: (loanId: string, amount: number, file: File | null) => void
+  onPayment: (loanId: string, amount: number, file: File | null, notes: string) => void
 }
 
 export function PaymentDialog({ open, onOpenChange, loan, onPayment }: PaymentDialogProps) {
   const [amount, setAmount] = useState('')
   const [file, setFile] = useState<File | null>(null)
+  const [notes, setNotes] = useState('')
 
   useEffect(() => {
     if (loan) {
       setAmount(loan.monthly_payment.toString())
       setFile(null)
+      setNotes('')
     }
   }, [loan, open])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (loan) {
-      onPayment(loan.id, parseFloat(amount), file)
+      onPayment(loan.id, parseFloat(amount), file, notes)
       onOpenChange(false)
     }
   }
@@ -91,6 +94,17 @@ export function PaymentDialog({ open, onOpenChange, loan, onPayment }: PaymentDi
             <p className="text-[10px] text-muted-foreground mt-1">
               Carica uno screenshot o un PDF come prova del versamento.
             </p>
+          </div>
+
+          <div>
+            <Label htmlFor="notes" className="text-foreground">Note (Opzionale)</Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
+              placeholder="Aggiungi una nota al pagamento..."
+              className="mt-1.5 resize-none h-20"
+            />
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

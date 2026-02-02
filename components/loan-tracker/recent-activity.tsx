@@ -62,6 +62,11 @@ export function RecentActivity({
                   <p className="text-xs text-muted-foreground">
                     {formatDate(payment.date)} - {statusLabels[payment.status]}
                   </p>
+                  {payment.notes && (
+                    <p className="text-xs text-foreground/80 italic mt-1 bg-secondary/30 p-1.5 rounded border-l-2 border-primary/30">
+                      "{payment.notes}"
+                    </p>
+                  )}
                   {payment.proof_url && (
                     <a
                       href={payment.proof_url}
